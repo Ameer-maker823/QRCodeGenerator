@@ -10,6 +10,9 @@ import androidx.core.view.WindowInsetsCompat
 import com.google.zxing.BarcodeFormat
 import com.journeyapps.barcodescanner.BarcodeEncoder
 import com.group4.qrcodegenerator.databinding.ActivityMainBinding
+import android.content.ContentValues
+import android.os.Environment
+import android.provider.MediaStore
 
 class MainActivity : AppCompatActivity() {
 
@@ -28,6 +31,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         binding.btnGenerate.setOnClickListener { generateQr() }
+        binding.btnSave.setOnClickListener { qrBitmap?.let { saveToGallery(it) } }
     }
 
     private fun generateQr() {
@@ -44,6 +48,23 @@ class MainActivity : AppCompatActivity() {
             binding.btnShare.visibility = View.VISIBLE
         } catch (e: Exception) {
             Toast.makeText(this, "Failed to generate QR", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    private fun saveToGallery(bitmap: Bitmap) {
+        val values = ContentValues().apply {
+            put(MediaStore.Images.Media.DISPLAY_NAME, "QR_${System.currentTimeMillis()}.png")
+            put(MediaStore.Images.Media.MIME_TYPE, "image/png")
+            put(MediaStore.Images.Media.RELATIVE_PATH, Environment.DIRECTORY_PICTURES + "/QRGenerator")
+        }
+        val uri = contentResolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values)
+        if (uri != null) {
+            contentResolver.openOutputStream(uri)?.use {
+                bitmap.compress(Bitmap.CompressFormat.PNG, 100, it)
+            }
+            Toast.makeText(this, "Saved to Pictures/QRGenerator", Toast.LENGTH_SHORT).show()
+        } else {
+            Toast.makeText(this, "Save failed", Toast.LENGTH_SHORT).show()
         }
     }
 }
