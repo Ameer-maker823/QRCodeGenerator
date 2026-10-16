@@ -13,6 +13,10 @@ import com.group4.qrcodegenerator.databinding.ActivityMainBinding
 import android.content.ContentValues
 import android.os.Environment
 import android.provider.MediaStore
+import android.content.Intent
+import androidx.core.content.FileProvider
+import java.io.File
+import java.io.FileOutputStream
 
 class MainActivity : AppCompatActivity() {
 
@@ -32,6 +36,7 @@ class MainActivity : AppCompatActivity() {
 
         binding.btnGenerate.setOnClickListener { generateQr() }
         binding.btnSave.setOnClickListener { qrBitmap?.let { saveToGallery(it) } }
+        binding.btnShare.setOnClickListener { qrBitmap?.let { shareQr(it) } }
     }
 
     private fun generateQr() {
@@ -66,5 +71,19 @@ class MainActivity : AppCompatActivity() {
         } else {
             Toast.makeText(this, "Save failed", Toast.LENGTH_SHORT).show()
         }
+    }
+
+    private fun shareQr(bitmap: Bitmap) {
+        val dir = File(cacheDir, "qr").apply { mkdirs() }
+        val file = File(dir, "qr_code.png")
+        FileOutputStream(file).use { bitmap.compress(Bitmap.CompressFormat.PNG, 100, it) }
+
+        val uri = FileProvider.getUriForFile(this, "$packageName.fileprovider", file)
+        val intent = Intent(Intent.ACTION_SEND).apply {
+            type = "image/png"
+            putExtra(Intent.EXTRA_STREAM, uri)
+            addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+        }
+        startActivity(Intent.createChooser(intent, "Share QR Code"))
     }
 }
