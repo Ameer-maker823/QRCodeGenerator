@@ -1,3 +1,8 @@
 <resources>
     <string name="app_name">QRCodeGenerator</string>
+    <string name="hint_input">Enter text or URL</string>
+    <string name="btn_generate">Generate QR</string>
+    <string name="cd_qr_code">Generated QR code</string>
+    <string name="btn_save">Save to Gallery</string>
+    <string name="btn_share">Share</string>
 </resources>
