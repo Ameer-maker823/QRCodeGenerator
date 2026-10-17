@@ -17,7 +17,7 @@ import android.content.Intent
 import androidx.core.content.FileProvider
 import java.io.File
 import java.io.FileOutputStream
-
+import com.google.zxing.EncodeHintType
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
@@ -65,7 +65,8 @@ class MainActivity : AppCompatActivity() {
 
     private fun showQr(text: String) {
         try {
-            qrBitmap = BarcodeEncoder().encodeBitmap(text, BarcodeFormat.QR_CODE, 800, 800)
+            val hints = mapOf(EncodeHintType.CHARACTER_SET to "UTF-8")
+            qrBitmap = BarcodeEncoder().encodeBitmap(text, BarcodeFormat.QR_CODE, 800, 800, hints)
             qrText = text
             binding.ivQrCode.setImageBitmap(qrBitmap)
             binding.ivQrCode.visibility = View.VISIBLE
