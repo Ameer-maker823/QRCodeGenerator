@@ -22,6 +22,7 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
     private var qrBitmap: Bitmap? = null
+    private var qrText: String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -30,7 +31,7 @@ class MainActivity : AppCompatActivity() {
 
         ViewCompat.setOnApplyWindowInsetsListener(binding.main) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            val extra = (24 * resources.displayMetrics.density).toInt()
+            val extra = 0
             v.setPadding(
                 systemBars.left + extra,
                 systemBars.top + extra,
@@ -43,7 +44,15 @@ class MainActivity : AppCompatActivity() {
         binding.btnGenerate.setOnClickListener { generateQr() }
         binding.btnSave.setOnClickListener { qrBitmap?.let { saveToGallery(it) } }
         binding.btnShare.setOnClickListener { qrBitmap?.let { shareQr(it) } }
+        savedInstanceState?.getString("qr_text")?.let { showQr(it) }
     }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putString("qr_text", qrText)
+
+    }
+
 
     private fun generateQr() {
         val text = binding.etInput.text.toString().trim()
@@ -51,8 +60,13 @@ class MainActivity : AppCompatActivity() {
             binding.etInput.error = "Please enter text or a URL"
             return
         }
+        showQr(text)
+    }
+
+    private fun showQr(text: String) {
         try {
             qrBitmap = BarcodeEncoder().encodeBitmap(text, BarcodeFormat.QR_CODE, 800, 800)
+            qrText = text
             binding.ivQrCode.setImageBitmap(qrBitmap)
             binding.ivQrCode.visibility = View.VISIBLE
             binding.btnSave.visibility = View.VISIBLE
