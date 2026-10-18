@@ -34,6 +34,10 @@ Built as **Task 1** of the Auspify Technologies Android Developer Internship.
 |---|---|
 | ![Update](Screenshots/07_update.png) | ![Rotation](Screenshots/08_rotation.png) |
 
+## Demo Video
+
+[Watch the demo](Demo/qr_demo.mp4)
+
 ## How to Run
 
 1. Clone the repository
